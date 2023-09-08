@@ -9,7 +9,7 @@ package BLL;
  * @author DELL
  */
 public class KhoaHocDTO {
-     private String id;
+    private String id;
     private String title;
     private String credits;
     private String department;
