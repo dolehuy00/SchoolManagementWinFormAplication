@@ -71,7 +71,7 @@ public class KhoaHocDAL extends KetNoi{
                 "LEFT JOIN onlinecourse ON course.CourseID = onlinecourse.CourseID\n" +
                 "LEFT JOIN onsitecourse ON course.CourseID = onsitecourse.CourseID\n" +
                 "WHERE course.Title LIKE '%"+keyword+"%' OR course.CourseID LIKE '%"+keyword+"%'";
-            ResultSet rs = KetNoi.search(query);
+            ResultSet rs = KetNoi.queryData(query);
             ArrayList<KhoaHocDTO> list = new ArrayList<>();
             while(rs.next()){
                 KhoaHocDTO course = new KhoaHocDTO();

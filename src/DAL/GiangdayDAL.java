@@ -26,7 +26,7 @@ public class GiangdayDAL {
         comboBox.removeAllItems();
         String query = "SELECT " + columnName + " FROM " + tableName + " WHERE EnrollmentDate IS NULL";
         try {
-            Connection conn = (Connection) KetNoi.getConnection1();
+            Connection conn = (Connection) KetNoi.getConnection();
             Statement stmt = (Statement) conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -42,7 +42,7 @@ public class GiangdayDAL {
         comboBox.removeAllItems();
         String query = "SELECT " + columnName + " FROM " + tableName;
         try {
-            Connection conn = (Connection) KetNoi.getConnection1();
+            Connection conn = (Connection) KetNoi.getConnection();
             Statement stmt = (Statement) conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -58,7 +58,7 @@ public class GiangdayDAL {
         String fullName = null;
         String query = "SELECT LastName, FirstName FROM person WHERE PersonID = ?";
         try {
-            Connection conn = (Connection) KetNoi.getConnection1();
+            Connection conn = (Connection) KetNoi.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -78,7 +78,7 @@ public class GiangdayDAL {
         String name = null;
         String query = "SELECT Title FROM course WHERE CourseID = ?";
         try {
-            Connection conn = (Connection) KetNoi.getConnection1();
+            Connection conn = (Connection) KetNoi.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -96,17 +96,17 @@ public class GiangdayDAL {
         List<Object[]> data = new ArrayList<>();
 
         try {
-            Connection conn = KetNoi.getConnection1();
-            String query = "SELECT courseinstructor.CourseID, courseinstructor.PersonID, course.Title, CONCAT(person.Lastname, ' ', person.Firstname) AS person_name, \n" +
-"       CASE WHEN onlinecourse.CourseID IS NOT NULL THEN 'X' ELSE '' END AS online, \n" +
-"       CASE WHEN onsitecourse.CourseID IS NOT NULL THEN 'X' ELSE '' END AS onsite \n" +
-"FROM courseinstructor\n" +
-"JOIN course ON courseinstructor.CourseID = course.CourseID\n" +
-"JOIN person ON courseinstructor.PersonID = person.PersonID\n" +
-"LEFT JOIN onlinecourse ON courseinstructor.CourseID = onlinecourse.CourseID\n" +
-"LEFT JOIN onsitecourse ON courseinstructor.CourseID = onsitecourse.CourseID\n" +
-"WHERE courseinstructor.PersonID IS NOT NULL\n" +
-"ORDER BY CourseID;";
+            Connection conn = KetNoi.getConnection();
+            String query = "SELECT courseinstructor.CourseID, courseinstructor.PersonID, course.Title, CONCAT(person.Lastname, ' ', person.Firstname) AS person_name, \n"
+                    + "       CASE WHEN onlinecourse.CourseID IS NOT NULL THEN 'X' ELSE '' END AS online, \n"
+                    + "       CASE WHEN onsitecourse.CourseID IS NOT NULL THEN 'X' ELSE '' END AS onsite \n"
+                    + "FROM courseinstructor\n"
+                    + "JOIN course ON courseinstructor.CourseID = course.CourseID\n"
+                    + "JOIN person ON courseinstructor.PersonID = person.PersonID\n"
+                    + "LEFT JOIN onlinecourse ON courseinstructor.CourseID = onlinecourse.CourseID\n"
+                    + "LEFT JOIN onsitecourse ON courseinstructor.CourseID = onsitecourse.CourseID\n"
+                    + "WHERE courseinstructor.PersonID IS NOT NULL\n"
+                    + "ORDER BY CourseID;";
             PreparedStatement pstmt = conn.prepareStatement(query);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -132,7 +132,7 @@ public class GiangdayDAL {
     public boolean addcourseinsreuctor(GiangDayDTO gd) {
         boolean success = false;
         try {
-            Connection conn = (Connection) KetNoi.getConnection1();
+            Connection conn = (Connection) KetNoi.getConnection();
             Statement stmt = conn.createStatement();
 
             // Kiểm tra số lượng bản ghi có CourseID bằng với gd.CourseID
@@ -164,7 +164,7 @@ public class GiangdayDAL {
     public boolean updateCourseInstructor(GiangDayDTO gd) {
         boolean success = false;
         try {
-            Connection conn = KetNoi.getConnection1();
+            Connection conn = KetNoi.getConnection();
             String sql = "UPDATE courseinstructor SET PersonID = ? WHERE CourseID = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, gd.PersonID);
@@ -183,7 +183,7 @@ public class GiangdayDAL {
     public boolean deleteCourseInstructor(GiangDayDTO gd) {
         boolean success = false;
         try {
-            Connection conn = KetNoi.getConnection1();
+            Connection conn = KetNoi.getConnection();
             String sql = "DELETE FROM courseinstructor WHERE CourseID = ? AND PersonID = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, gd.CourseID);
@@ -198,46 +198,45 @@ public class GiangdayDAL {
         }
         return success;
     }
-public List<Object[]> search(String keyword) {
-    List<Object[]> data = new ArrayList<>();
 
-    try {
-        Connection conn = KetNoi.getConnection1();
-        String query = "SELECT ci.personid, ci.courseid, c.title, CONCAT(p.lastname, ' ', p.firstname) AS person_name, "
-                     + "CASE WHEN oc.CourseID IS NOT NULL THEN 'X' ELSE '' END AS online, "
-                     + "CASE WHEN sc.CourseID IS NOT NULL THEN 'X' ELSE '' END AS onsite "
-                     + "FROM courseinstructor ci "
-                     + "JOIN course c ON ci.courseid = c.courseid "
-                     + "JOIN person p ON ci.personid = p.personid "
-                     + "LEFT JOIN onlinecourse oc ON ci.courseid = oc.CourseID "
-                     + "LEFT JOIN onsitecourse sc ON ci.courseid = sc.CourseID "
-                     + "WHERE ci.personid = ? OR ci.courseid = ? OR c.title LIKE ? OR CONCAT(p.lastname, ' ', p.firstname) LIKE ?;";
-        PreparedStatement pstmt = conn.prepareStatement(query);
-        pstmt.setString(1, keyword);
-        pstmt.setString(2, keyword);
-        pstmt.setString(3, "%" + keyword + "%");
-        pstmt.setString(4, "%" + keyword + "%");
-        ResultSet rs = pstmt.executeQuery();
-        while (rs.next()) {
-            Object[] row = new Object[6];
+    public List<Object[]> search(String keyword) {
+        List<Object[]> data = new ArrayList<>();
 
-           
-            row[0] = rs.getInt("courseid");
-            row[1] = rs.getString("title");
-            row[2] = rs.getInt("personid");
-            row[3] = rs.getString("person_name");
-            row[4] = rs.getString("online");
-            row[5] = rs.getString("onsite");
-            data.add(row);
+        try {
+            Connection conn = KetNoi.getConnection();
+            String query = "SELECT ci.personid, ci.courseid, c.title, CONCAT(p.lastname, ' ', p.firstname) AS person_name, "
+                    + "CASE WHEN oc.CourseID IS NOT NULL THEN 'X' ELSE '' END AS online, "
+                    + "CASE WHEN sc.CourseID IS NOT NULL THEN 'X' ELSE '' END AS onsite "
+                    + "FROM courseinstructor ci "
+                    + "JOIN course c ON ci.courseid = c.courseid "
+                    + "JOIN person p ON ci.personid = p.personid "
+                    + "LEFT JOIN onlinecourse oc ON ci.courseid = oc.CourseID "
+                    + "LEFT JOIN onsitecourse sc ON ci.courseid = sc.CourseID "
+                    + "WHERE ci.personid = ? OR ci.courseid = ? OR c.title LIKE ? OR CONCAT(p.lastname, ' ', p.firstname) LIKE ?;";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, keyword);
+            pstmt.setString(2, keyword);
+            pstmt.setString(3, "%" + keyword + "%");
+            pstmt.setString(4, "%" + keyword + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Object[] row = new Object[6];
+
+                row[0] = rs.getInt("courseid");
+                row[1] = rs.getString("title");
+                row[2] = rs.getInt("personid");
+                row[3] = rs.getString("person_name");
+                row[4] = rs.getString("online");
+                row[5] = rs.getString("onsite");
+                data.add(row);
+            }
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        rs.close();
-        pstmt.close();
-        conn.close();
-    } catch (SQLException ex) {
-        ex.printStackTrace();
+        return data;
     }
-    return data;
-}
-
 
 }

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class KetNoi {
-        private static String DB_URL = "jdbc:mysql://localhost:3306/school";
+    private static String DB_URL = "jdbc:mysql://localhost:3306/school";
     private static String USER_NAME = "root";
     private static String PASSWORD = "";
   
@@ -66,21 +66,7 @@ public class KetNoi {
             ex.printStackTrace();
         }
     }
-    
 
- 
-    public static ResultSet search(String key)
-    {
-        try {
-            Connection conn=getConnection(DB_URL, USER_NAME, PASSWORD);
-            Statement stmt=conn.createStatement();
-            ResultSet rs = stmt.executeQuery(key); 
-            return rs;    
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-          return null;
-    }
     public static Connection getConnection(String dbURL, String userName, 
             String password) {
         Connection conn = null;
@@ -93,11 +79,8 @@ public class KetNoi {
         }
         return conn;
     }
-        public static java.sql.Connection getConnection1() throws SQLException {
-    String url = "jdbc:mysql://localhost:3306/school";
-    String username = "root";
-    String password = "";
-    java.sql.Connection conn = DriverManager.getConnection(url, username, password);
-    return conn;
-}
+    public static java.sql.Connection getConnection() throws SQLException {
+        Connection conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
+        return conn;
+    }
 }
